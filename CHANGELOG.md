@@ -14,10 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standardised Makefile: `dist/` output, `build` / `build-all` / `package` / `test` / `clean` targets; separate amd64/arm64 binaries (no universal binary)
 - Updated README to follow organisation conventions
 
-[Unreleased]: https://github.com/nlink-jp/markdown-viewer/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/nlink-jp/markdown-viewer/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/nlink-jp/markdown-viewer/releases/tag/v1.1.0
-
 ## [1.1.0] - 2025-08-10
 
 ### Added
@@ -59,3 +55,9 @@ This is the first stable release after a major security and functionality overha
 
 ### Changed
 - **Improved Layout:** Increased the maximum width of the Markdown rendering area to 1140px for better readability on wider screens.
+
+[Unreleased]: https://github.com/nlink-jp/markdown-viewer/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/nlink-jp/markdown-viewer/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/nlink-jp/markdown-viewer/compare/v1.0.1...v1.1.0
+[1.0.1]: https://github.com/nlink-jp/markdown-viewer/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/nlink-jp/markdown-viewer/releases/tag/v1.0.0
