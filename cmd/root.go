@@ -14,9 +14,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"markdown-viewer/internal/browser"
-	"markdown-viewer/internal/config"
-	"markdown-viewer/internal/server"
+	"github.com/nlink-jp/markdown-viewer/internal/browser"
+	"github.com/nlink-jp/markdown-viewer/internal/config"
+	"github.com/nlink-jp/markdown-viewer/internal/server"
 )
 
 var cfg config.Config

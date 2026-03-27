@@ -1,119 +1,65 @@
-# Makefile for Markdown Viewer
+MODULE  := github.com/nlink-jp/markdown-viewer
+BINARY  := mdv
+BIN_DIR := dist
 
-# Go parameters
-GOCMD=go
-GOBUILD=$(GOCMD) build
-GOCLEAN=$(GOCMD) clean
-GOTEST=$(GOCMD) test
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+LDFLAGS := -ldflags "-s -w -X 'main.version=$(VERSION)'"
 
-# Project details
-BINARY_NAME=mdv
-OUTPUT_DIR=bin
+# Allow callers to override GOCACHE / GOMODCACHE for environments where the
+# default cache directory is not writable (e.g. sandboxes, CI containers).
+GOCACHE    ?= $(HOME)/.cache/go-build
+GOMODCACHE ?= $(shell go env GOPATH)/pkg/mod
 
-# Versioning
-# Get the version from the latest git tag
-VERSION ?= $(shell git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0")
-# Get the git commit hash
-COMMIT_HASH ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "dev")
-# LDFLAGS to embed version and commit info
-LDFLAGS=-ldflags "-s -w -X 'main.version=$(VERSION) (commit: $(COMMIT_HASH))'"
+export GOCACHE
+export GOMODCACHE
 
-.PHONY: all build clean test cross-compile package-all vulncheck help
+PLATFORMS := \
+	darwin/amd64 \
+	darwin/arm64 \
+	linux/amd64 \
+	linux/arm64 \
+	windows/amd64
 
-help:
-	@echo "Usage: make [target]"
-	@echo ""
-	@echo "Targets:"
-	@echo "  all           : Build binaries for all target platforms."
-	@echo "  build         : Build the binary for the current OS and architecture."
-	@echo "  run           : Build and run the application."
-	@echo "  test          : Run all tests."
-	@echo "  vulncheck     : Run vulnerability check."
-	@echo "  clean         : Clean up build artifacts."
-	@echo "  cross-compile : Cross-compile for all target platforms (macOS, Linux, Windows)."
-	@echo "  package-all   : Package all cross-compiled binaries into archives."
-	@echo "  help          : Display this help message."
+.PHONY: build build-all package test clean help
 
-all: cross-compile package-all
-
-# Build for the current OS/Arch
+## build: Build binary for the current OS/Arch → ./dist/mdv
 build:
-	@echo "Building for $(shell go env GOOS)/$(shell go env GOARCH)..."
-	@mkdir -p $(OUTPUT_DIR)/$(shell go env GOOS)-$(shell go env GOARCH)
-	@$(GOBUILD) $(LDFLAGS) -o $(OUTPUT_DIR)/$(shell go env GOOS)-$(shell go env GOARCH)/$(BINARY_NAME) .
+	@mkdir -p $(BIN_DIR)
+	go build $(LDFLAGS) -o $(BIN_DIR)/$(BINARY) .
 
-# Run the application
-run: build
-	@$(OUTPUT_DIR)/$(shell go env GOOS)-$(shell go env GOARCH)/$(BINARY_NAME)
+## build-all: Cross-compile for all target platforms
+build-all:
+	@mkdir -p $(BIN_DIR)
+	$(foreach platform,$(PLATFORMS),$(call build_platform,$(platform)))
 
-# Run tests
+define build_platform
+	$(eval OS   := $(word 1,$(subst /, ,$(1))))
+	$(eval ARCH := $(word 2,$(subst /, ,$(1))))
+	$(eval EXT  := $(if $(filter windows,$(OS)),.exe,))
+	$(eval OUT  := $(BIN_DIR)/$(BINARY)-$(OS)-$(ARCH)$(EXT))
+	@echo "Building $(OUT)..."
+	GOOS=$(OS) GOARCH=$(ARCH) go build $(LDFLAGS) -o $(OUT) .
+
+endef
+
+## package: Cross-compile for all target platforms and create .zip archives → dist/
+package: build-all
+	$(foreach platform,$(PLATFORMS), \
+		$(eval OS   := $(word 1,$(subst /, ,$(platform)))) \
+		$(eval ARCH := $(word 2,$(subst /, ,$(platform)))) \
+		$(eval EXT  := $(if $(filter windows,$(OS)),.exe,)) \
+		$(eval BIN  := $(BIN_DIR)/$(BINARY)-$(OS)-$(ARCH)$(EXT)) \
+		$(eval ZIP  := $(BIN_DIR)/$(BINARY)-$(VERSION)-$(OS)-$(ARCH).zip) \
+		zip -j $(ZIP) $(BIN) ;)
+
+## test: Run all unit tests
 test:
-	@echo "Running tests..."
-	@$(GOTEST) -v ./...
+	go test -v -race -count=1 ./...
 
-# Run vulnerability check
-vulncheck:
-	@echo "Running vulnerability check..."
-	@$(GOCMD) run golang.org/x/vuln/cmd/govulncheck@latest ./...
-
-# Clean up build artifacts
+## clean: Remove build artifacts
 clean:
-	@echo "Cleaning up..."
-	@rm -rf $(OUTPUT_DIR)
+	rm -rf $(BIN_DIR)
 
-# Cross-compile for all target platforms
-cross-compile: build-mac-universal build-linux build-windows
-	@echo "Cross-compilation finished. Binaries are in the $(OUTPUT_DIR)/ directory."
-
-# Build for Linux (amd64 & arm64)
-build-linux:
-	@echo "Building for Linux (amd64)..."
-	@mkdir -p $(OUTPUT_DIR)/linux-amd64
-	@GOOS=linux GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o $(OUTPUT_DIR)/linux-amd64/$(BINARY_NAME) .
-	@cp NOTICE.md $(OUTPUT_DIR)/linux-amd64/
-	@echo "Building for Linux (arm64)..."
-	@mkdir -p $(OUTPUT_DIR)/linux-arm64
-	@GOOS=linux GOARCH=arm64 $(GOBUILD) $(LDFLAGS) -o $(OUTPUT_DIR)/linux-arm64/$(BINARY_NAME) .
-	@cp NOTICE.md $(OUTPUT_DIR)/linux-arm64/
-
-# Build for Windows (amd64)
-build-windows:
-	@echo "Building for Windows (amd64)..."
-	@mkdir -p $(OUTPUT_DIR)/windows-amd64
-	@GOOS=windows GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o $(OUTPUT_DIR)/windows-amd64/$(BINARY_NAME).exe .
-	@cp NOTICE.md $(OUTPUT_DIR)/windows-amd64/
-
-# Build macOS Universal Binary
-build-mac-universal:
-	@echo "Building for macOS (Universal)..."
-	@mkdir -p $(OUTPUT_DIR)/darwin-universal
-	@GOOS=darwin GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-amd64 .
-	@GOOS=darwin GOARCH=arm64 $(GOBUILD) $(LDFLAGS) -o $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-arm64 .
-	@lipo -create -output $(OUTPUT_DIR)/darwin-universal/$(BINARY_NAME) $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-amd64 $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-arm64
-	@codesign -s - $(OUTPUT_DIR)/darwin-universal/$(BINARY_NAME)
-	@rm $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-amd64 $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-arm64
-	@cp NOTICE.md $(OUTPUT_DIR)/darwin-universal/
-	@echo "Created Universal binary at $(OUTPUT_DIR)/darwin-universal/$(BINARY_NAME)"
-
-# Package all binaries into archives
-package-all: cross-compile
-	@echo "Packaging all binaries..."
-	$(MAKE) package-darwin
-	$(MAKE) package-linux
-	$(MAKE) package-windows
-
-# Package macOS binary
-package-darwin:
-	@echo "Packaging macOS binary..."
-	@cd $(OUTPUT_DIR)/darwin-universal && tar -czvf ../$(BINARY_NAME)-$(VERSION)-darwin-universal.tar.gz $(BINARY_NAME) NOTICE.md
-
-# Package Linux binaries
-package-linux:
-	@echo "Packaging Linux binaries..."
-	@cd $(OUTPUT_DIR)/linux-amd64 && tar -czvf ../$(BINARY_NAME)-$(VERSION)-linux-amd64.tar.gz $(BINARY_NAME) NOTICE.md
-	@cd $(OUTPUT_DIR)/linux-arm64 && tar -czvf ../$(BINARY_NAME)-$(VERSION)-linux-arm64.tar.gz $(BINARY_NAME) NOTICE.md
-
-# Package Windows binary
-package-windows:
-	@echo "Packaging Windows binary..."
-	@cd $(OUTPUT_DIR)/windows-amd64 && zip -r ../$(BINARY_NAME)-$(VERSION)-windows-amd64.zip $(BINARY_NAME).exe NOTICE.md
+## help: Show available targets
+help:
+	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/## //'

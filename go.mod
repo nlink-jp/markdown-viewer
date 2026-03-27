@@ -1,4 +1,4 @@
-module markdown-viewer
+module github.com/nlink-jp/markdown-viewer
 
 go 1.24.6
 

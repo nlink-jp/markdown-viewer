@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"markdown-viewer/internal/assets"
-	"markdown-viewer/internal/config"
+	"github.com/nlink-jp/markdown-viewer/internal/assets"
+	"github.com/nlink-jp/markdown-viewer/internal/config"
 )
 
 // Server holds the HTTP server and its dependencies.

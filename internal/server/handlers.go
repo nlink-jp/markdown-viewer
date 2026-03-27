@@ -12,8 +12,8 @@ import (
 	"regexp"
 	"strings"
 
-	"markdown-viewer/internal/filebrowser"
-	"markdown-viewer/internal/markdown"
+	"github.com/nlink-jp/markdown-viewer/internal/filebrowser"
+	"github.com/nlink-jp/markdown-viewer/internal/markdown"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/yuin/goldmark"

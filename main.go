@@ -1,7 +1,7 @@
 package main
 
 import (
-	"markdown-viewer/cmd"
+	"github.com/nlink-jp/markdown-viewer/cmd"
 )
 
 // Version is set at build time
