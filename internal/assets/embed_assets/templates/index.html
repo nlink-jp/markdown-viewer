@@ -6,9 +6,11 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; }
         .container { display: flex; height: 100%; }
-        #sidebar { width: 300px; height: 100%; border-right: 1px solid #ccc; display: flex; flex-direction: column; }
+        #sidebar { width: 300px; min-width: 150px; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
         #sidebar-content { flex: 1; min-height: 0; overflow: hidden; }
-        #content { flex-grow: 1; height: 100%; }
+        #divider { width: 5px; cursor: col-resize; background: #e0e0e0; flex-shrink: 0; transition: background 0.15s; }
+        #divider:hover, #divider.dragging { background: #1956ad; }
+        #content { flex: 1; min-width: 200px; height: 100%; }
         iframe { width: 100%; height: 100%; border: 0; }
     </style>
 </head>
@@ -22,6 +24,7 @@
                 <button id="shutdown-btn" class="shutdown-btn">Shutdown Server</button>
             </div>
         </div>
+        <div id="divider"></div>
         <div id="content">
             <iframe name="content_frame" src="/welcome"></iframe>
         </div>
@@ -39,5 +42,35 @@
     </div>
 
     <script src="/static/main.js"></script>
+    <script>
+    (function() {
+        const divider = document.getElementById('divider');
+        const sidebar = document.getElementById('sidebar');
+        let dragging = false;
+
+        divider.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            dragging = true;
+            divider.classList.add('dragging');
+            document.body.style.cursor = 'col-resize';
+            // Prevent iframes from capturing mouse events during drag
+            document.querySelectorAll('iframe').forEach(f => f.style.pointerEvents = 'none');
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!dragging) return;
+            const newWidth = Math.max(150, Math.min(e.clientX, window.innerWidth * 0.6));
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (!dragging) return;
+            dragging = false;
+            divider.classList.remove('dragging');
+            document.body.style.cursor = '';
+            document.querySelectorAll('iframe').forEach(f => f.style.pointerEvents = '');
+        });
+    })();
+    </script>
 </body>
 </html>
