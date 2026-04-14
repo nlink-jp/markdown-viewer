@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - 2026-04-15
 
+### Added
+
+- Draggable sidebar divider for resizing file tree pane (150px–60%)
+- File names truncated with ellipsis when too long for sidebar width
+
 ### Fixed
 
 - Sidebar file list no longer hidden behind shutdown button when list is long
