@@ -1,6 +1,6 @@
 # Build artifacts
 dist/
-markdown-viewer
+/markdown-viewer
 
 # Go
 *.test
