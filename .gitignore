@@ -1,2 +1,22 @@
+# Build artifacts
 dist/
-.DS_Storemarkdown-viewer
+markdown-viewer
+
+# Go
+*.test
+*.out
+
+# macOS
+.DS_Store
+
+# Credentials
+config.json
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Claude Code
+.claude/

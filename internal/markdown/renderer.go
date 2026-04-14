@@ -37,18 +37,20 @@ func (r *SafeLinkRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer
 func isSafeLink(destination []byte) bool {
 	destStr := string(destination)
 
-	// Disallow all external links.
-	if strings.HasPrefix(destStr, "http://") || strings.HasPrefix(destStr, "https://") {
+	// Disallow anything that looks like a protocol/scheme (contains "://")
+	if strings.Contains(destStr, "://") {
 		return false
 	}
 
-	// Allow only links to local Markdown files.
-	ext := strings.ToLower(filepath.Ext(destStr))
-	if ext == ".md" || ext == ".markdown" {
-		return true
+	// Disallow javascript: and data: schemes
+	lower := strings.ToLower(destStr)
+	if strings.HasPrefix(lower, "javascript:") || strings.HasPrefix(lower, "data:") {
+		return false
 	}
 
-	return false
+	// Allow only relative paths to local Markdown files
+	ext := strings.ToLower(filepath.Ext(destStr))
+	return ext == ".md" || ext == ".markdown"
 }
 
 // renderLink is the rendering function for links.

@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-04-15
+
+### Fixed
+
+- Sidebar file list no longer hidden behind shutdown button when list is long
+- `isSafeLink` now blocks all protocol schemes (ftp://, javascript:, data:, etc.), not just http/https
+- Content-Type header set before response body in ApiListHandler
+- JavaScript null check uses `Array.isArray()` instead of `=== null`
+
+### Added
+
+- Unit tests for config, filebrowser, markdown renderer, browser, and server
+- README.ja.md (Japanese documentation)
+- AGENTS.md
+
+### Changed
+
+- Default port standardized to 8080 (was 8888 in config.go, 8080 in CLI)
+- Sidebar footer uses flex layout instead of position:absolute
+- Removed dead code (internal/server/templates.go)
+- Removed stale TODO comment (browser auto-open already implemented)
+- Removed invalid JSON comments from config.json.example
+- Replaced `javascript:void(0)` with `#` + preventDefault in treeview.js
+
 ## [1.2.0] - 2026-03-28
 
 ### Changed
