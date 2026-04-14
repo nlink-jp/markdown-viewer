@@ -17,7 +17,7 @@ type Config struct {
 // LoadConfig reads configuration from file and environment variables.
 func LoadConfig() (config Config, err error) {
 	// Set defaults
-	viper.SetDefault("port", 8888)
+	viper.SetDefault("port", 8080)
 	viper.SetDefault("open", false)
 	viper.SetDefault("target_dir", ".")
 

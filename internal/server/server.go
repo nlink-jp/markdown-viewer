@@ -118,7 +118,6 @@ func containsDotDot(path string) bool {
 // ListenAndServe starts the HTTP server.
 func (s *Server) ListenAndServe() error {
 	log.Printf("Server listening on http://127.0.0.1:%d", s.Config.Port)
-	// TODO: Implement browser auto-open here
 
 	if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		return fmt.Errorf("listen: %w", err)

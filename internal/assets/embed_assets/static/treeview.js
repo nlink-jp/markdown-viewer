@@ -6,9 +6,9 @@ async function fetchAndRender(path, parentElement) {
         if (!response.ok) throw new Error('Failed to fetch');
         const items = await response.json();
 
-        if (items === null || items.length === 0) {
-            const parentIcon = parentElement.closest('.node-container').querySelector('.icon');
-            if(parentIcon) parentIcon.classList.add('empty');
+        if (!Array.isArray(items) || items.length === 0) {
+            const parentIcon = parentElement.closest('.node-container')?.querySelector('.icon');
+            if (parentIcon) parentIcon.classList.add('empty');
             return;
         }
 
@@ -25,25 +25,24 @@ async function fetchAndRender(path, parentElement) {
 
             const link = document.createElement('a');
             link.textContent = item.name;
+            link.href = '#';
 
             if (item.is_dir) {
-                icon.textContent = '▶';
-                link.href = 'javascript:void(0)';
+                icon.textContent = '\u25B6';
                 label.addEventListener('click', (e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     toggleNode(li);
                 });
-                // Pass path to li element for toggleNode to use
                 li.dataset.path = item.path;
             } else {
                 icon.innerHTML = '&#128196;';
-                link.href = 'javascript:void(0)';
                 label.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.parent.document.querySelector('iframe[name="content_frame"]').src = `/view${item.path}`;
+                    window.parent.document.querySelector('iframe[name="content_frame"]').src = '/view' + item.path;
                 });
             }
-            
+
             label.appendChild(icon);
             label.appendChild(link);
             li.appendChild(label);
@@ -65,13 +64,13 @@ function toggleNode(li) {
 
     if (childrenContainer) {
         childrenContainer.classList.toggle('expanded');
-        icon.textContent = childrenContainer.classList.contains('expanded') ? '▼' : '▶';
+        icon.textContent = childrenContainer.classList.contains('expanded') ? '\u25BC' : '\u25B6';
     } else {
         const newChildrenContainer = document.createElement('div');
         newChildrenContainer.classList.add('children', 'expanded');
         li.appendChild(newChildrenContainer);
         fetchAndRender(path, newChildrenContainer);
-        icon.textContent = '▼';
+        icon.textContent = '\u25BC';
     }
 }
 

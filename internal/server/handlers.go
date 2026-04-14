@@ -143,6 +143,7 @@ func (s *Server) ApiListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(items); err != nil {
 		log.Printf("failed to encode json response: %v", err)
 	}
