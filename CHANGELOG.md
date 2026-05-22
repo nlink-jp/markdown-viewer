@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-05-23
+
+### Changed
+
+- **Darwin releases are now Developer ID signed and Apple-notarized.**
+  `mdv-v1.3.1-darwin-{amd64,arm64}.zip` carry full Apple Developer
+  ID Application signatures and notarization tickets from Apple.
+  End users on macOS no longer need to bypass Gatekeeper with
+  right-click → Open or `xattr -d com.apple.quarantine` on first
+  launch; local users who place `mdv` under Dropbox-synced (or any
+  other FileProvider-managed) paths are no longer killed by
+  macOS's ad-hoc + provenance distrust policy. Pipeline:
+  `scripts/codesign-darwin.sh` + `scripts/notarize-darwin.sh`,
+  driven by `make package`. Adopts the org-wide convention in
+  `nlink-jp/.github` CONVENTIONS.md §Code Signing.
+- **Release zips now include LICENSE and README.md** alongside
+  the binary, matching the sibling util-series tools. Previous
+  v1.3.0 assets shipped the binary only.
+- **Release zip filenames now effectively embed the version**
+  (`mdv-vX.Y.Z-<os>-<arch>.zip`); the Makefile produced versioned
+  names already but v1.3.0 was published under version-less
+  filenames. v1.3.1 is the first release with the Makefile-driven
+  versioned names matching the artifact list.
+
+No behaviour change to the binary itself — feature-wise this is
+identical to v1.3.0.
+
 ## [1.3.0] - 2026-04-15
 
 ### Added
