@@ -60,7 +60,11 @@ package: build-all
 		$(eval EXT  := $(if $(filter windows,$(OS)),.exe,)) \
 		$(eval BIN  := $(BIN_DIR)/$(BINARY)-$(OS)-$(ARCH)$(EXT)) \
 		$(eval ZIP  := $(BIN_DIR)/$(BINARY)-$(VERSION)-$(OS)-$(ARCH).zip) \
-		zip -j $(ZIP) $(BIN) LICENSE README.md ;)
+		$(eval STAGE := $(BIN_DIR)/_pkg-$(OS)-$(ARCH)) \
+		rm -rf $(STAGE) && mkdir -p $(STAGE) ; \
+		cp $(BIN) $(STAGE)/$(BINARY)$(EXT) ; \
+		zip -j $(ZIP) $(STAGE)/$(BINARY)$(EXT) LICENSE README.md ; \
+		rm -rf $(STAGE) ;)
 	@scripts/notarize-darwin.sh $(BIN_DIR)/$(BINARY)-$(VERSION)-darwin-amd64.zip "$(NOTARY_PROFILE)"
 	@scripts/notarize-darwin.sh $(BIN_DIR)/$(BINARY)-$(VERSION)-darwin-arm64.zip "$(NOTARY_PROFILE)"
 
