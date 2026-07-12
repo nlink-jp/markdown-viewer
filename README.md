@@ -66,7 +66,7 @@ make test         # Run the test suite
 make clean        # Remove dist/
 ```
 
-Target platforms: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`.
+Target platforms: `linux/amd64`, `linux/arm64`, `darwin/arm64`, `windows/amd64`. macOS ships arm64 only (Apple Silicon); Intel Macs can build from source.
 
 ## See Also
 

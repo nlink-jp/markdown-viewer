@@ -11,7 +11,7 @@ Part of util-series.
 ```bash
 make build          # Build → dist/mdv
 make test           # Run all tests
-make build-all      # Cross-compile for 5 platforms
+make build-all      # Cross-compile for 4 platforms (darwin arm64 only; no Intel)
 make package        # Build + create .zip archives
 make clean          # Remove dist/
 ```
