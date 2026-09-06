@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`NOTICE.md` now ships inside the release archives.** highlight.js
+  (BSD-3-Clause) and Mermaid.js (MIT) are bundled into the rendered output,
+  and both licences require their notice to travel with a distribution — but
+  the archives carried only `README.md` and `LICENSE`, so the attributions
+  reached nobody who downloaded a release.
+
 ## [1.4.0] - 2026-07-12
 
 ### Removed

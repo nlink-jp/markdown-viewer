@@ -47,7 +47,8 @@ build-all:
 
 ## package: Build all platforms, archive with version suffix (zip for
 ## darwin/windows, tar.gz for linux), bundle the canonical binary +
-## README.md + LICENSE, and notarize the darwin build → dist/. Asset
+## README.md + LICENSE + NOTICE.md (bundled highlight.js and Mermaid.js),
+## and notarize the darwin build → dist/. Asset
 ## naming follows the org Release Archive Standard
 ## (mdv-vX.Y.Z-<os>-<arch>.<ext>).
 package: build-all
@@ -55,7 +56,7 @@ package: build-all
 		ext=""; [ "$$os" = windows ] && ext=".exe"; \
 		stage=_pkg; rm -rf $$stage; mkdir -p $$stage; \
 		cp "$(BINARY)-$$os-$$arch$$ext" "$$stage/$(BINARY)$$ext"; \
-		cp ../README.md ../LICENSE $$stage/; \
+		cp ../README.md ../LICENSE ../NOTICE.md $$stage/; \
 		base="$(BINARY)-$(VERSION)-$$os-$$arch"; \
 		if [ "$$os" = linux ]; then ( cd $$stage && tar -czf "../$$base.tar.gz" * ); \
 		else ( cd $$stage && zip -q "../$$base.zip" * ); fi; \
