@@ -98,3 +98,8 @@ BREW_KIND := formula
 BREW_DESC := Secure single-binary Markdown viewer and file browser
 BREW_REPO := markdown-viewer
 include scripts/release-brew.mk
+
+## test-linux: run the test suite inside a Linux container (podman/docker)
+.PHONY: test-linux
+test-linux:
+	@scripts/test-linux.sh
