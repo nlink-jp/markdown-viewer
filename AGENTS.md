@@ -14,7 +14,7 @@ make test           # Run all tests
 make test-linux     # same suite on Linux (container)
 make build-all      # Cross-compile for 4 platforms (darwin arm64 only; no Intel)
 make package        # Build + create .zip archives
-make verify-release  # gate: .notarized marker + freshness (run before upload)
+make verify-release  # gate: notarized, fresh, runs at this version, clean linux archives (run before upload)
 make clean          # Remove dist/
 ```
 
