@@ -28,7 +28,7 @@ PLATFORMS := \
 	linux/arm64 \
 	windows/amd64
 
-.PHONY: build build-all package verify-release test clean help
+.PHONY: build build-all package verify-release test clean help vuln
 
 ## build: Build binary for the current OS/Arch → ./dist/mdv
 build:
@@ -45,13 +45,20 @@ build-all:
 	done
 	@scripts/codesign-darwin.sh $(BIN_DIR)/$(BINARY)-darwin-arm64 "$(CODESIGN_IDENTITY)" "$(BINARY)"
 
+## vuln: known vulnerabilities in the modules and the standard library this
+## build uses (govulncheck). `package` depends on it, so a release cannot be
+## built past a finding. It needs the network, and its database changes under
+## an unchanged tree: a finding can appear without a commit.
+vuln:
+	govulncheck ./...
+
 ## package: Build all platforms, archive with version suffix (zip for
 ## darwin/windows, tar.gz for linux), bundle the canonical binary +
 ## README.md + LICENSE + NOTICE.md (bundled highlight.js and Mermaid.js),
 ## and notarize the darwin build → dist/. Asset
 ## naming follows the org Release Archive Standard
 ## (mdv-vX.Y.Z-<os>-<arch>.<ext>).
-package: build-all
+package: vuln build-all
 	@cd $(BIN_DIR) && for p in $(PLATFORMS); do os=$${p%/*}; arch=$${p#*/}; \
 		ext=""; [ "$$os" = windows ] && ext=".exe"; \
 		stage=_pkg; rm -rf $$stage; mkdir -p $$stage; \
