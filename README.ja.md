@@ -52,7 +52,7 @@ mdv [flags]
 
 ## ビルド
 
-Go 1.24 以降が必要。
+Go 1.27.4 以降が必要。
 
 ```sh
 git clone https://github.com/nlink-jp/markdown-viewer.git

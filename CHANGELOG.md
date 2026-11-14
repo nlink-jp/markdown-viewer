@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-14
+
+### Security
+
+- **goldmark is updated from v1.7.13 to v1.7.17** (GO-2026-5320, cross-site
+  scripting through links and images in its HTML renderer). mdv renders
+  Markdown with that renderer and then passes the HTML through a sanitizer
+  (bluemonday) before serving it, so the sanitizer stood between a crafted
+  document and the browser. Whether the advisory's input would have survived
+  the sanitizer was not tested; the renderer itself is now fixed.
+- **`golang.org/x/net` is updated from v0.38.0 to v0.62.0**, with `x/text`
+  v0.43.0 and `x/sys` v0.49.0. The sanitizer reads HTML with `x/net/html`;
+  `govulncheck` listed that package's advisories without finding the affected
+  functions called.
+- **The binaries are built with Go 1.27.4, and `go.mod` now requires it** (it
+  was 1.24.6). The binaries of v1.4.0 were built with Go 1.26.4 in July.
+  Since then the standard library has had security fixes in `net/http` and
+  `html/template`, both of which this server uses; it listens on 127.0.0.1
+  only.
+
+### Changed
+
+- **`make package` runs the vulnerability check first** (`make vuln`), so a
+  release cannot be built past a finding.
+
 ### Fixed
 
 - **`make verify-release` now fails closed.** Its last block chained unzip, the

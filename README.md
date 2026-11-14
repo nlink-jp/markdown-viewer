@@ -54,7 +54,7 @@ Then open `http://127.0.0.1:8080` in your browser.
 
 ## Building
 
-Requires Go 1.24 or later.
+Requires Go 1.27.4 or later.
 
 ```sh
 git clone https://github.com/nlink-jp/markdown-viewer.git
